@@ -1,6 +1,6 @@
 [submodule "RenderWareFile"]
 	path = RenderWareFile
-	url = https://github.com/igorseabra4/RenderWareFile
+	url = https://github.com/dreamsyntax/RenderWareFile
 [submodule "GenericStageInjectionCommon"]
 	path = GenericStageInjectionCommon
 	url = https://github.com/igorseabra4/GenericStageInjectionCommon

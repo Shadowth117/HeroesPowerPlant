@@ -80,14 +80,12 @@ namespace HeroesPowerPlant.CollisionEditor
         {
             CLFile data = new CLFile(0);
 
-            BinaryReader CLReader = new BinaryReader(new FileStream(FileName, FileMode.Open));
-
-            CLReader.BaseStream.Position = 0;
+            RenderWareFile.BinaryReader CLReader = new RenderWareFile.BinaryReader(new FileStream(FileName, FileMode.Open));
 
             data.numBytes = Switch(CLReader.ReadUInt32());
             //Get total number of bytes in file
 
-            if (data.numBytes != CLReader.BaseStream.Length)
+            if (data.numBytes != CLReader.BaseStream.BaseStream().Length)
                 throw new ArgumentException("Not a valid CL file.");
 
             //Get offset of structs
@@ -115,16 +113,18 @@ namespace HeroesPowerPlant.CollisionEditor
 
             for (int i = 0; i < data.numVertices; i++)
             {
-                CLReader.BaseStream.Position = data.pointVertex + i * 0xC;
+                CLReader.BaseStream.Seek(data.pointVertex + i * 0xC, SeekOrigin.Begin);
+
                 CLVertexList.Add(new CollisionVertex(Switch(CLReader.ReadSingle()), Switch(CLReader.ReadSingle()), Switch(CLReader.ReadSingle())));
                 bar.PerformStep();
             }
 
             for (int i = 0; i < data.numTriangles; i++)
             {
-                CLReader.BaseStream.Position = data.pointTriangle + i * 0x20;
+                CLReader.BaseStream.Seek(data.pointTriangle + i * 0x20, SeekOrigin.Begin);
+
                 CLTriangleList.Add(new Triangle(Switch(CLReader.ReadUInt16()), Switch(CLReader.ReadUInt16()), Switch(CLReader.ReadUInt16())));
-                CLReader.BaseStream.Position += 6;
+                CLReader.BaseStream.Seek(CLReader.BaseStream.Position() + 6, SeekOrigin.Begin);
 
                 Vector3 Normals = new Vector3(Switch(CLReader.ReadSingle()), Switch(CLReader.ReadSingle()), Switch(CLReader.ReadSingle()));
                 CLVertexList[CLTriangleList[i].Vertices[0]].NormalList.Add(Normals);
@@ -159,14 +159,14 @@ namespace HeroesPowerPlant.CollisionEditor
 
             for (int i = 0; i < data.numQuadnodes; i++)
             {
-                CLReader.BaseStream.Position = data.pointQuadtree + i * 0x20;
+                CLReader.BaseStream.Seek(data.pointQuadtree + i * 0x20, SeekOrigin.Begin);
                 QuadNode TempNode = new QuadNode
                 {
                     Index = Switch(CLReader.ReadUInt16()),
                     Parent = Switch(CLReader.ReadUInt16()),
                     Child = Switch(CLReader.ReadUInt16())
                 };
-                CLReader.BaseStream.Position += 8;
+                CLReader.BaseStream.Seek(CLReader.BaseStream.Position() + 8, SeekOrigin.Begin);
                 TempNode.NodeTriangleAmount = Switch(CLReader.ReadUInt16());
                 TempNode.TriListOffset = Switch(CLReader.ReadUInt32());
                 TempNode.PosValueX = Switch(CLReader.ReadUInt16());

@@ -11,15 +11,14 @@ namespace HeroesPowerPlant.ShadowCameraEditor
         {
             List<ShadowCamera> list = new List<ShadowCamera>();
             ShadowCameraFileHeader header;
-            using (BinaryReader camReader = new BinaryReader(new FileStream(fileName, FileMode.Open)))
+            using (RenderWareFile.BinaryReader camReader = new RenderWareFile.BinaryReader(new FileStream(fileName, FileMode.Open)))
             {
-                camReader.BaseStream.Position = 0;
                 header = new ShadowCameraFileHeader(
                     camReader.ReadInt32(), camReader.ReadInt32(), camReader.ReadInt32(),
                     camReader.ReadInt32(), camReader.ReadInt32(), camReader.ReadInt32()
                     );
 
-                while (camReader.BaseStream.Position != camReader.BaseStream.Length)
+                while (camReader.BaseStream.Position() != camReader.BaseStream.BaseStream().Length)
                 {
                     ShadowCamera TempCam = new ShadowCamera(
                         camReader.ReadInt32(), //i_00

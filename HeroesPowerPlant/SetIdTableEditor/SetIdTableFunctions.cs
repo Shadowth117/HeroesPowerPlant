@@ -31,19 +31,19 @@ namespace HeroesPowerPlant.SetIdTableEditor
 
         public static List<TableEntry> LoadTable(string fileName, bool isShadow, Dictionary<(byte, byte), ObjectEntry> objectEntries)
         {
-            BinaryReader tableReader = new BinaryReader(new FileStream(fileName, FileMode.Open));
+            RenderWareFile.BinaryReader tableReader = new RenderWareFile.BinaryReader(new FileStream(fileName, FileMode.Open));
 
             List<TableEntry> tableEntries = new List<TableEntry>();
 
             int amount;
             if (isShadow)
             {
-                tableReader.BaseStream.Position = 4;
+                tableReader.BaseStream.Seek(4, SeekOrigin.Begin);
                 amount = tableReader.ReadInt32();
             }
             else
             {
-                amount = (int)tableReader.BaseStream.Length / 20;
+                amount = (int)tableReader.BaseStream.BaseStream().Length / 20;
             }
 
             for (int i = 0; i < amount; i++)
@@ -62,7 +62,7 @@ namespace HeroesPowerPlant.SetIdTableEditor
             return tableEntries;
         }
 
-        private static TableEntry ReadHeroesTableEntry(BinaryReader tableReader, Dictionary<(byte, byte), ObjectEntry> objectEntries)
+        private static TableEntry ReadHeroesTableEntry(RenderWareFile.BinaryReader tableReader, Dictionary<(byte, byte), ObjectEntry> objectEntries)
         {
             TableEntry temporaryEntry = new TableEntry
             {
@@ -70,7 +70,7 @@ namespace HeroesPowerPlant.SetIdTableEditor
                 values1 = Switch(tableReader.ReadUInt32()),
                 values2 = Switch(tableReader.ReadUInt32())
             };
-            tableReader.BaseStream.Position += 6;
+            tableReader.BaseStream.Seek(tableReader.BaseStream.Position() + 6, SeekOrigin.Begin);
 
             byte objList = tableReader.ReadByte();
             byte objType = tableReader.ReadByte();
@@ -88,7 +88,7 @@ namespace HeroesPowerPlant.SetIdTableEditor
             return temporaryEntry;
         }
 
-        private static TableEntry ReadShadowTableEntry(BinaryReader tableReader, Dictionary<(byte, byte), ObjectEntry> objectEntries)
+        private static TableEntry ReadShadowTableEntry(RenderWareFile.BinaryReader tableReader, Dictionary<(byte, byte), ObjectEntry> objectEntries)
         {
             TableEntry temporaryEntry = new TableEntry();
 

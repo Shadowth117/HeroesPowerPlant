@@ -11,11 +11,9 @@ namespace HeroesPowerPlant.CameraEditor
         {
             List<CameraHeroes> list = new List<CameraHeroes>();
 
-            using (BinaryReader camReader = new BinaryReader(new FileStream(fileName, FileMode.Open)))
+            using (RenderWareFile.BinaryReader camReader = new RenderWareFile.BinaryReader(new FileStream(fileName, FileMode.Open)))
             {
-                camReader.BaseStream.Position = 0;
-
-                while (camReader.BaseStream.Position != camReader.BaseStream.Length)
+                while (camReader.BaseStream.Position() != camReader.BaseStream.BaseStream().Length)
                 {
                     CameraHeroes TempCam = new CameraHeroes(
                         cameraType: Switch(camReader.ReadInt32()),

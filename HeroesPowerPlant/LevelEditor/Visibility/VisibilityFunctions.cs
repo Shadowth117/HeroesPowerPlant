@@ -43,11 +43,11 @@ namespace HeroesPowerPlant.LevelEditor
         {
             List<Chunk> list = new List<Chunk>();
 
-            BinaryReader BLKFileReader = new BinaryReader(new FileStream(fileName, FileMode.Open));
+            RenderWareFile.BinaryReader BLKFileReader = new RenderWareFile.BinaryReader(new FileStream(fileName, FileMode.Open));
 
-            BLKFileReader.BaseStream.Position = 0;
+            BLKFileReader.BaseStream.Seek(0, SeekOrigin.Begin);
 
-            for (int i = 0; i < (BLKFileReader.BaseStream.Length / 0x1C); i++)
+            for (int i = 0; i < (BLKFileReader.BaseStream.BaseStream().Length / 0x1C); i++)
             {
                 byte[] BCArray = BLKFileReader.ReadBytes(0x1C);
                 Chunk TempChunk = new Chunk
@@ -85,9 +85,9 @@ namespace HeroesPowerPlant.LevelEditor
         {
             List<Chunk> list = new List<Chunk>();
 
-            BinaryReader BLKFileReader = new BinaryReader(bdtFile);
+            RenderWareFile.BinaryReader BLKFileReader = new RenderWareFile.BinaryReader(bdtFile);
 
-            BLKFileReader.BaseStream.Position = 0x40;
+            BLKFileReader.BaseStream.Seek(0x40, SeekOrigin.Begin);
 
             int numberOfChunks = BLKFileReader.ReadInt32();
             for (int j = 0; j < numberOfChunks; j++)

@@ -13,22 +13,23 @@ namespace HeroesPowerPlant.LayoutEditor
         public static List<SetObjectHeroes> GetHeroesLayout(string fileName)
         {
             List<SetObjectHeroes> list = new List<SetObjectHeroes>(2048);
-            BinaryReader LayoutFileReader = new BinaryReader(new FileStream(fileName, FileMode.Open));
+            RenderWareFile.BinaryReader LayoutFileReader = new RenderWareFile.BinaryReader(new FileStream(fileName, FileMode.Open));
 
             for (int i = 0; i < 2048; i++)
             {
-                LayoutFileReader.BaseStream.Position = 0x30 * i;
-                if (LayoutFileReader.BaseStream.Position == LayoutFileReader.BaseStream.Length)
+                LayoutFileReader.BaseStream.Seek(0x30 * i, SeekOrigin.Begin);
+                if (LayoutFileReader.BaseStream.Position() == LayoutFileReader.BaseStream.BaseStream().Length)
                     break;
 
                 Vector3 Position = new Vector3(Switch(LayoutFileReader.ReadSingle()), Switch(LayoutFileReader.ReadSingle()), Switch(LayoutFileReader.ReadSingle()));
                 Vector3 Rotation = new Vector3(Switch(LayoutFileReader.ReadInt32()), Switch(LayoutFileReader.ReadInt32()), Switch(LayoutFileReader.ReadInt32()));
 
                 byte[] UnkBytes1 = LayoutFileReader.ReadBytes(4);
-                LayoutFileReader.BaseStream.Position += 4;
+                LayoutFileReader.BaseStream.Seek(LayoutFileReader.BaseStream.Position() + 4, SeekOrigin.Begin);
 
                 byte[] UnkBytes2 = LayoutFileReader.ReadBytes(4);
-                LayoutFileReader.BaseStream.Position += 4;
+                LayoutFileReader.BaseStream.Seek(LayoutFileReader.BaseStream.Position() + 4, SeekOrigin.Begin);
+
 
                 byte List = LayoutFileReader.ReadByte();
                 byte Type = LayoutFileReader.ReadByte();
@@ -46,7 +47,7 @@ namespace HeroesPowerPlant.LayoutEditor
                     TempObject.HasMiscSettings = false;
                 else
                 {
-                    LayoutFileReader.BaseStream.Position = 0x18000 + (0x24 * MiscSettings);
+                    LayoutFileReader.BaseStream.Seek(0x18000 + (0x24 * MiscSettings), SeekOrigin.Begin);
                     TempObject.MiscSettings = LayoutFileReader.ReadBytes(36);
                 }
 
@@ -128,8 +129,7 @@ namespace HeroesPowerPlant.LayoutEditor
 
         public static List<SetObjectShadow> GetShadowLayout(string fileName)
         {
-            BinaryReader LayoutFileReader = new BinaryReader(new FileStream(fileName, FileMode.Open));
-            LayoutFileReader.BaseStream.Position = 0;
+            RenderWareFile.BinaryReader LayoutFileReader = new RenderWareFile.BinaryReader(new FileStream(fileName, FileMode.Open));
 
             string FileMagic = new string(LayoutFileReader.ReadChars(4));
             if (FileMagic != "sky2")
@@ -145,9 +145,9 @@ namespace HeroesPowerPlant.LayoutEditor
 
             for (int i = 0; i < AmountOfObjects; i++)
             {
-                LayoutFileReader.BaseStream.Position = 12 + i * 0x2C;
+                LayoutFileReader.BaseStream.Seek(12 + i * 0x2C, SeekOrigin.Begin);
 
-                if (LayoutFileReader.BaseStream.Position >= LayoutFileReader.BaseStream.Length)
+                if (LayoutFileReader.BaseStream.Position() >= LayoutFileReader.BaseStream.BaseStream().Length)
                     break;
 
                 Vector3 Position = new Vector3(LayoutFileReader.ReadSingle(), LayoutFileReader.ReadSingle(), LayoutFileReader.ReadSingle());
@@ -166,7 +166,7 @@ namespace HeroesPowerPlant.LayoutEditor
                 list.Add(TempObject);
             }
 
-            LayoutFileReader.BaseStream.Position = 12 + AmountOfObjects * 0x2C;
+            LayoutFileReader.BaseStream.Seek(12 + AmountOfObjects * 0x2C, SeekOrigin.Begin);
             for (int i = 0; i < list.Count; i++)
             {
                 list[i].MiscSettings = LayoutFileReader.ReadBytes(miscCountL[i]);
