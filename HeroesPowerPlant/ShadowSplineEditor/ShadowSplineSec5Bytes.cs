@@ -8,7 +8,7 @@
 
         public override string ToString()
         {
-            return $"S1: {slot1} | S2: {slot2} | noS2: {noSlot2}";
+            return $"S1: {slot1}::0x{slot1:X} | S2: {slot2}::0x{slot2:X} | noS2: {noSlot2}";
         }
     }
 }

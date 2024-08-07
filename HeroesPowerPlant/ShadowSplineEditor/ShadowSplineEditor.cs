@@ -236,9 +236,41 @@ namespace HeroesPowerPlant.ShadowSplineEditor
 
             for (int i = 0; i < Splines.Count; i++)
             {
-                bytes.Add(Splines[i].UnknownSec5Bytes[0].slot1);
-                if (!Splines[i].UnknownSec5Bytes[0].noSlot2)
-                    bytes.Add(Splines[i].UnknownSec5Bytes[0].slot2);
+                if (i == 0) // if its the first spline, keep whatever was previously in it
+                {
+                    bytes.Add(Splines[i].UnknownSec5Bytes[0].slot1);
+                    if (!Splines[i].UnknownSec5Bytes[0].noSlot2)
+                        bytes.Add(Splines[i].UnknownSec5Bytes[0].slot2);
+                } else // every other spline needs to look at the prior spline
+                {
+                    // if prior spline has more verts than 7 (8+, use 0x80 for slot1, plus every +8 loop for 0x81, 0x82... etc)
+                    // for every vert [0x43] base + 0x8 * numberOfVerts
+
+                    var priorVertCount = Splines[i - 1].Vertices.Length;
+                    var pain = priorVertCount / 8;
+                    var remainder = priorVertCount % 8;
+                    if (pain == 0)
+                    {
+                        // no section two bytes
+                        bytes.Add((byte)(0x43 + priorVertCount * 0x8));
+                    }
+                    else
+                    {
+                        // this is wrong, only increment on reaching the 'max' for a slot2 value
+                        byte slot1Val = 0x80;
+          /*              for (int num = 0; num < pain; num++) 
+                        {
+                            slot1Val += 0x01; // add per 0x8 count
+                        }*/
+                        
+                        bytes.Add(slot1Val);
+                        // get remainder and add it in slot2Val
+                        bytes.Add((byte)(0x0 + priorVertCount * 0x8)); //remainder * 0x8));
+                    }
+/*                    bytes.Add(Splines[i].UnknownSec5Bytes[0].slot1); OLD CODE
+                    if (!Splines[i].UnknownSec5Bytes[0].noSlot2)
+                        bytes.Add(Splines[i].UnknownSec5Bytes[0].slot2);*/
+                }
                 bytes.Add(0x49);
             }
 
